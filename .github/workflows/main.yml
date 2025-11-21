@@ -45,7 +45,7 @@ jobs:
     # 6. Push Docker image
     - name: Push Docker image
       run: |
-        docker push myapp
+        docker push emdadripon/myapp
 
     # 7. Set up kubectl
     - name: Set up kubectl
