@@ -66,10 +66,11 @@ jobs:
       uses: azure/setup-kubectl@v3
       with:
         version: 'latest'
-
-    # 8. Configure kubeconfig (assuming KUBECONFIG is set in secrets)
-    - name: Set up kubeconfig
-      run: echo "${{ secrets.KUBECONFIG }}" > kubeconfig && export KUBECONFIG=$(pwd)/kubeconfig
+      # 2. Restore kubeconfig
+    - name: Load kubeconfig
+      run: |
+       echo "${{ secrets.KUBECONFIG_BASE64 }}" | base64 --decode > $HOME/.kube/config
+       chmod 600 $HOME/.kube/config
 
     - name: Set up K8s context
       uses: azure/k8s-set-context@v3
