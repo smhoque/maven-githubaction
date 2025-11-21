@@ -66,6 +66,21 @@ jobs:
       uses: azure/setup-kubectl@v3
       with:
         version: 'latest'
+        
+
+    - name: Test kubectl
+      run: kubectl get nodes
+      
+    - name: Prepare kubeconfig
+      run: |
+      mkdir -p $HOME/.kube
+      echo "${{ secrets.KUBECONFIG }}" | base64 --decode > $HOME/.kube/config
+      chmod 600 $HOME/.kube/config
+
+- name: Test kubectl
+  run: kubectl get nodesv
+
+      
       # 2. Restore kubeconfig
     - name: Load kubeconfig
       run: |
