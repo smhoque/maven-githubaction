@@ -45,39 +45,25 @@ jobs:
         IMAGE=ghcr.io/${{ github.repository }}/myapp
         docker tag $IMAGE:latest $IMAGE:${{ github.sha }}
 
-    # 7. Push images
+    # 7. Push images to GHCR
     - name: Push Docker images
       run: |
         IMAGE=ghcr.io/${{ github.repository }}/myapp
         docker push $IMAGE:latest
         docker push $IMAGE:${{ github.sha }}
 
-    # 8. Install kubectl
-    - name: Set up kubectl
-      uses: azure/setup-kubectl@v3
-      with:
-        version: 'latest'
+    # ---------------------------------------
+    # 8. Create a Kubernetes cluster (KinD)
+    # ---------------------------------------
+    - name: Create KinD cluster
+      uses: helm/kind-action@v1
 
-    # 9. Prepare kubeconfig (base64 decoded)
-    - name: Prepare kubeconfig
-      run: |
-        mkdir -p $HOME/.kube
-        echo "${{ secrets.KUBECONFIG }}" | base64 --decode > $HOME/.kube/config
-        chmod 600 $HOME/.kube/config
-
-    # 10. Test connection to Kubernetes cluster
-    - name: Test kubectl connectivity
+    # 9. Test Kubernetes cluster
+    - name: Test kubectl
       run: kubectl get nodes
 
-    # 11. Set Kubernetes context
-    - name: Set up K8s context
-      uses: azure/k8s-set-context@v3
-      with:
-        method: kubeconfig
-        kubeconfig: ${{ secrets.KUBECONFIG }}
-
-    # 12. Deploy Pod
-    - name: Apply pod.yaml
+    # 10. Deploy your pod
+    - name: Deploy pod
       run: kubectl apply -f pod.yaml
 
 
